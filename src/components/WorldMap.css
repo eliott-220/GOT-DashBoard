@@ -1,0 +1,27 @@
+.world-map-viewport {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #0d1526 0%, #04070d 100%);
+}
+
+/* This stage is what the future camera (pan/zoom) will transform.
+   It stays untouched here — step 2 only fits it to the viewport. */
+.world-map-stage {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: 100%;
+}
+
+.world-map-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
