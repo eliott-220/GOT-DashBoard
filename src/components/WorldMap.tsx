@@ -6,7 +6,7 @@ import type {
 } from "react";
 import mapImage from "../../assets/map/world-map-base.png";
 import CastleHotspot from "./CastleHotspot";
-import { castles } from "../data/castles";
+import { castles, type Castle } from "../data/castles";
 import { useCamera } from "../hooks/useCamera";
 import "./WorldMap.css";
 
@@ -17,6 +17,9 @@ const MAP_HEIGHT = 1024;
 
 const ZOOM_STEP = 1.3;
 const KEY_PAN_STEP = 90;
+const CASTLE_FOCUS_SCALE = 2.6;
+const CASTLE_FOCUS_EASE = 0.09;
+const DRAG_THRESHOLD = 5;
 
 interface ActivePointer {
   x: number;
@@ -25,11 +28,15 @@ interface ActivePointer {
 
 export default function WorldMap() {
   const viewportRef = useRef<HTMLDivElement>(null);
-  const { camera, zoomAt, panBy, setTarget, targetRef, reset, isHome } = useCamera(viewportRef);
+  const { camera, zoomAt, panBy, setTarget, targetRef, screenToWorld, focusOn, reset, isHome } = useCamera(
+    viewportRef,
+    MAP_WIDTH / MAP_HEIGHT,
+  );
 
   const pointers = useRef(new Map<number, ActivePointer>());
   const dragRef = useRef<{ startX: number; startY: number; camX: number; camY: number } | null>(null);
   const pinchRef = useRef<{ dist: number; mid: ActivePointer } | null>(null);
+  const dragMovedRef = useRef(false);
 
   const getViewportPoint = useCallback((clientX: number, clientY: number) => {
     const rect = viewportRef.current?.getBoundingClientRect();
@@ -51,6 +58,7 @@ export default function WorldMap() {
     pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     dragRef.current = null;
     pinchRef.current = null;
+    dragMovedRef.current = false;
   }, []);
 
   const handlePointerMove = useCallback(
@@ -67,6 +75,9 @@ export default function WorldMap() {
         }
         const dx = p.x - dragRef.current.startX;
         const dy = p.y - dragRef.current.startY;
+        if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+          dragMovedRef.current = true;
+        }
         setTarget({ x: dragRef.current.camX + dx, y: dragRef.current.camY + dy, scale: t.scale }, { instant: true });
         return;
       }
@@ -129,6 +140,20 @@ export default function WorldMap() {
     [panBy, reset, zoomAt],
   );
 
+  const handleCastleSelect = useCallback(
+    (_castle: Castle, element: HTMLButtonElement) => {
+      if (dragMovedRef.current) return;
+      const viewportRect = viewportRef.current?.getBoundingClientRect();
+      if (!viewportRect) return;
+      const elRect = element.getBoundingClientRect();
+      const screenX = elRect.left + elRect.width / 2 - viewportRect.left;
+      const screenY = elRect.top + elRect.height / 2 - viewportRect.top;
+      const world = screenToWorld(screenX, screenY);
+      focusOn(world.x, world.y, CASTLE_FOCUS_SCALE, { ease: CASTLE_FOCUS_EASE });
+    },
+    [focusOn, screenToWorld],
+  );
+
   return (
     <div
       className="world-map-viewport"
@@ -156,7 +181,7 @@ export default function WorldMap() {
           />
           <div className="castle-hotspots-layer">
             {castles.map((castle) => (
-              <CastleHotspot key={castle.id} castle={castle} />
+              <CastleHotspot key={castle.id} castle={castle} onSelect={handleCastleSelect} />
             ))}
           </div>
         </div>
