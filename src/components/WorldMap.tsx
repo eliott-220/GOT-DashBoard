@@ -5,6 +5,8 @@ import type {
   WheelEvent as ReactWheelEvent,
 } from "react";
 import mapImage from "../../assets/map/world-map-base.png";
+import CastleHotspot from "./CastleHotspot";
+import { castles } from "../data/castles";
 import { useCamera } from "../hooks/useCamera";
 import "./WorldMap.css";
 
@@ -152,6 +154,11 @@ export default function WorldMap() {
             height={MAP_HEIGHT}
             draggable={false}
           />
+          <div className="castle-hotspots-layer">
+            {castles.map((castle) => (
+              <CastleHotspot key={castle.id} castle={castle} />
+            ))}
+          </div>
         </div>
       </div>
 
