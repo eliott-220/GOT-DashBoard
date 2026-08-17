@@ -44,6 +44,7 @@
 
 .world-map-reset {
   position: absolute;
+  z-index: 10;
   right: 1.5rem;
   bottom: 1.5rem;
   padding: 0.5rem 1rem;

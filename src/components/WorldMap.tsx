@@ -5,6 +5,7 @@ import type {
   WheelEvent as ReactWheelEvent,
 } from "react";
 import mapImage from "../../assets/map/world-map-base.png";
+import AmbientLayer from "./AmbientLayer";
 import CastleHotspot from "./CastleHotspot";
 import { castles, type Castle } from "../data/castles";
 import { useCamera } from "../hooks/useCamera";
@@ -186,6 +187,8 @@ export default function WorldMap() {
           </div>
         </div>
       </div>
+
+      <AmbientLayer />
 
       <button
         type="button"

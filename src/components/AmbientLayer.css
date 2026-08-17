@@ -1,0 +1,91 @@
+.ambient-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.ambient-cloud {
+  position: absolute;
+  left: -30%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 70%);
+  filter: blur(6px);
+  animation-name: ambient-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@keyframes ambient-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(160vw);
+  }
+}
+
+.ambient-light-sweep {
+  position: absolute;
+  top: -20%;
+  left: -60%;
+  width: 220%;
+  height: 140%;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 248, 224, 0.05) 50%, transparent 60%);
+  mix-blend-mode: soft-light;
+  animation: ambient-sweep 50s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes ambient-sweep {
+  0%,
+  100% {
+    transform: translateX(-8%);
+  }
+  50% {
+    transform: translateX(8%);
+  }
+}
+
+.ambient-bird {
+  position: absolute;
+  left: -5%;
+  opacity: 0;
+  animation-name: ambient-fly;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes ambient-fly {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(55vw, -3vh);
+  }
+  85% {
+    opacity: 0.9;
+  }
+  92% {
+    opacity: 0;
+  }
+  100% {
+    transform: translate(95vw, 2vh);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-cloud,
+  .ambient-light-sweep,
+  .ambient-bird {
+    animation: none;
+  }
+}
